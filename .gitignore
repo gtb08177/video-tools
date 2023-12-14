@@ -11,3 +11,6 @@
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Ignore any generated video files
+ffmpeg_cropped/
