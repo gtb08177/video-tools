@@ -14,3 +14,6 @@
 
 # Ignore any generated video files
 ffmpeg_cropped/
+
+
+__pycache__
