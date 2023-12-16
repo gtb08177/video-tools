@@ -2,7 +2,7 @@
 
 import subprocess
 import json
-from common_functions.utilities_system import get_cpu_info, get_gpu_info
+from common_functions.utilities_system import get_gpu_info
 
 ## FFPROBE Helpers
 
@@ -96,6 +96,7 @@ def is_valid_time_range(file_path, start_time, end_time):
 
     except (ValueError, subprocess.CalledProcessError):
         return False
+
 
 ## FFMPEG Helpers
 

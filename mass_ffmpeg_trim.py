@@ -12,9 +12,9 @@ NEW_OUTPUT_DIR_NAME = "ffmpeg_trimmed"
 CSV_INPUT_EXPECTED_ARG_COUNT = 3
 
 
-def process_row(row: [str], input_file_loc: str, output_directory: str, hw_encoder: str):
+def process_row(row: [str], common_directory: str, output_directory: str):
     """
-        For a given row of data, input file directory location, output file directory location and available hardware acceleration
+        For a given row of data, input video file path, output file directory location and available hardware acceleration
         Append the file name from the row, to the input file directory location and attempt to crop to known sizes and remove
         the nextbase logo and output the new asset at a similar location.
     """
@@ -23,49 +23,57 @@ def process_row(row: [str], input_file_loc: str, output_directory: str, hw_encod
     else: 
         filename, start_time, end_time = row[0], row[1], row[2]
         
-        # Construct the full file path for the input
-        full_input_file_path = os.path.join(os.path.dirname(input_file_loc), filename)
+        # We don't know the full file path to the input; we assume it
+        # lives in the same dir as the csv file provided.
+        # Construct the full input video file path combining the known
+        # common directory provided and the filename from the csv file
+        video_input_path = os.path.join(common_directory, filename)
         
-        ## TODO Validate the start and end times are within limits?
-        ## What about the crazy GoPro timing as the FPS is far higher than dashcam
+        # Construct the full output video file path combining the known
+        # common directory provided and a newly generated filenamefor the output
+        new_output_file_path = gen_new_filepath(output_directory, os.path.basename(filename),'mp4')
 
-        # Construct the full file path for the output
-        new_output_file_path = f'{output_directory}/' + get_new_filename(output_directory, os.path.basename(full_input_file_path))
-
-        # We now have all we need to feed into ffmpeg, so give a printout to help show this
-        print(f"Input :: {full_input_file_path}")
+        # We now know what the input is and what the output will 
+        # be print them to the console for convenience.
+        print(f"Input :: {video_input_path}")
         print(f'Output :: {new_output_file_path}')
+
+        ## TODO validation
+        # if is_valid_time_range(full_input_file_path,start_time,end_time):
+        #     print("time range deemed valid")
+
+        # Need to dynamically obtain some values to plug into FFMPEG
+        ffmpeg_v_codec_arg = get_ffmpeg_video_codec_arg_for_video(video_input_path)
+        orig_video_bitrate = get_video_bitrate(video_input_path)
 
         # Construct the ffmpeg shell command that uses the Apple Silicon GPU cores
         command = (
-            f'ffmpeg -i {full_input_file_path} -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a '
-            f'-filter:v -c:v {hw_encoder} -c:a copy '
+            f'ffmpeg -i {video_input_path} -ss {start_time} -to {end_time} -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a '
+            f'-c:v {ffmpeg_v_codec_arg} -b:v {orig_video_bitrate} -c:a aac '
             f'{new_output_file_path}'
         )
 
-        print("\n" + command)
+        print("\nCommand :: " + command)
         print()
-        subprocess.run(command, shell=True)
+        #subprocess.run(command, shell=True)
 
 
-def process_csv(input_file_path):
-    if not is_csv_file(input_file_path):
+def process_csv(csv_file_path):
+    if not is_csv_file(csv_file_path):
         raise ValueError("The provided file is not a CSV file.")
 
-    # Establish what hardware accel we have available to us
-    chosen_encoder = get_hw_encoder()
-
-    with open(input_file_path, 'r') as csv_file:
+    with open(csv_file_path, 'r') as csv_file:
         # In the same location as the csv file provided, 
         # create a directory named 'ffmpeg_cropped' and use 
         # it as an output location for the new video assets
-        output_directory = os.path.join(os.path.dirname(input_file_path), NEW_OUTPUT_DIR_NAME)
+        common_directory = os.path.dirname(csv_file_path)
+        output_directory = os.path.join(common_directory, NEW_OUTPUT_DIR_NAME)
         os.makedirs(output_directory, exist_ok=True)
 
         # Now loop through the contents of the csv file
         csv_reader = csv.reader(csv_file)
         for row in csv_reader:
-            process_row(row, input_file_path, output_directory, chosen_encoder)
+            process_row(row, common_directory, output_directory)
 
 
 if __name__ == "__main__":
