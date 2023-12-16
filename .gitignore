@@ -13,7 +13,8 @@
 *.vsix
 
 # Ignore any generated video files
-ffmpeg_cropped/
+ffmpeg_nextbase_logo_cropped/
+ffmpeg_trimmed/
 
 
 __pycache__
