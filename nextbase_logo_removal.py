@@ -54,7 +54,7 @@ def process_row(row: [str], input_file_loc: str, output_directory: str, hw_encod
         crop_filter, bit_rate = get_crop_filter_and_bit_rate(full_input_file_path)
 
         # Construct the full file path for the output
-        new_output_file_path = f'{output_directory}/' + get_new_filename(output_directory, os.path.basename(full_input_file_path))
+        new_output_file_path = f'{output_directory}/' + gen_new_filepath(output_directory, os.path.basename(full_input_file_path))
 
         # We now have all we need to feed into ffmpeg, so give a printout to help show this
         print(f"Input :: {full_input_file_path}")
