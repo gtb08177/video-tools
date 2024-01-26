@@ -53,7 +53,7 @@ def process_row(row: [str], common_directory: str, output_directory: str):
 
         print("\nCommand :: " + command)
         print()
-        # ffmpeg -i '/Users/ryan/Desktop/PHT - Spain & Portugal 23/GoPro - Day 1&2/GX010037.MP4' -ss 00:01:11 -to 00:01:54 -c copy -map_metadata 0 -map 0:v -map 0:a -map 0:3 '/Users/ryan/Desktop/PHT - Spain & Portugal 23/GoPro - Day 1&2/ffmpeg_trimmed/GX010037_1.MP4'
+        # ffmpeg -i '/Users/ryan/Desktop/PHT - Spain & Portugal 23/GoPro - Day 1&2/GX010037.MP4' -ss 00:01:11 -to 00:01:54 -c copy -map_metadata 0 '/Users/ryan/Desktop/PHT - Spain & Portugal 23/GoPro - Day 1&2/ffmpeg_trimmed/GX010037.mp4'
         subprocess.run(command, shell=True)
 
 
