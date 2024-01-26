@@ -46,16 +46,15 @@ def process_row(row: [str], common_directory: str, output_directory: str):
         ffmpeg_v_codec_arg = get_ffmpeg_video_codec_arg_for_video(video_input_path)
         orig_video_bitrate = get_video_bitrate(video_input_path)
 
-        # Construct the ffmpeg shell command that uses the Apple Silicon GPU cores
         command = (
-            f'ffmpeg -i {video_input_path} -ss {start_time} -to {end_time} -map_metadata 0 -map_metadata:s:v 0:s:v -map_metadata:s:a 0:s:a '
-            f'-c:v {ffmpeg_v_codec_arg} -b:v {orig_video_bitrate} -c:a aac '
-            f'{new_output_file_path}'
+            f'ffmpeg -i \'{video_input_path}\' -ss {start_time} -to {end_time} -c copy -map_metadata 0 '
+            f'\'{new_output_file_path}\''
         )
 
         print("\nCommand :: " + command)
         print()
-        #subprocess.run(command, shell=True)
+        # ffmpeg -i '/Users/ryan/Desktop/PHT - Spain & Portugal 23/GoPro - Day 1&2/GX010037.MP4' -ss 00:01:11 -to 00:01:54 -c copy -map_metadata 0 -map 0:v -map 0:a -map 0:3 '/Users/ryan/Desktop/PHT - Spain & Portugal 23/GoPro - Day 1&2/ffmpeg_trimmed/GX010037_1.MP4'
+        subprocess.run(command, shell=True)
 
 
 def process_csv(csv_file_path):
@@ -72,6 +71,7 @@ def process_csv(csv_file_path):
 
         # Now loop through the contents of the csv file
         csv_reader = csv.reader(csv_file)
+        next(csv_reader,None) # skip first row 
         for row in csv_reader:
             process_row(row, common_directory, output_directory)
 
