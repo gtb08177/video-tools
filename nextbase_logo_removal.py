@@ -72,24 +72,24 @@ def process_row(row: [str], input_file_loc: str, output_directory: str, hw_encod
         subprocess.run(command, shell=True)
 
 
-def process_csv(input_file_path):
-    if not is_csv_file(input_file_path):
+def process_csv(input_csv_file_path):
+    if not is_csv_file(input_csv_file_path):
         raise ValueError("The provided file is not a CSV file.")
 
     # Establish what hardware accel we have available to us
     chosen_encoder = get_hw_encoder()
 
-    with open(input_file_path, 'r') as csv_file:
+    with open(input_csv_file_path, 'r') as csv_file:
         # In the same location as the csv file provided, 
-        # create a directory named 'ffmpeg_cropped' and use 
+        # create a directory named 'ffmpeg_nextbase_logo_cropped' and use 
         # it as an output location for the new video assets
-        output_directory = os.path.join(os.path.dirname(input_file_path), NEW_OUTPUT_DIR_NAME)
+        output_directory = os.path.join(os.path.dirname(input_csv_file_path), NEW_OUTPUT_DIR_NAME)
         os.makedirs(output_directory, exist_ok=True)
 
         # Now loop through the contents of the csv file
         csv_reader = csv.reader(csv_file)
         for row in csv_reader:
-            process_row(row, input_file_path, output_directory, chosen_encoder)
+            process_row(row, input_csv_file_path, output_directory, chosen_encoder)
 
 
 if __name__ == "__main__":

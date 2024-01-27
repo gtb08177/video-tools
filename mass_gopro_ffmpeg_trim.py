@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+## TODO : If no end time is provided; detect this and assume you want dynamically obtain the end time as to ensure not even a ms is lost of footage
 import os
 import csv
 import sys
